@@ -3,7 +3,6 @@ package com.example.backend;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,15 +22,6 @@ public class SecurityConfig {
                 .and().build();
     }
 
-
-/*    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-}*/
-
-
-
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
@@ -47,16 +37,6 @@ public class SecurityConfig {
                         .build()
         );
     }
-
-    // For error message:
-    // java.lang.IllegalArgumentException: There is no PasswordEncoder mapped for the id "null"
-    // 1234abcd!
-//    public static void main(String[] args) {
-//        String username = new BCryptPasswordEncoder().encode("Hans");
-//        System.out.println(username);
-//    }
-
-   //  https://www.javainuse.com/onlineBcrypt
 }
 
 
