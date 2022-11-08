@@ -1,5 +1,6 @@
 package com.example.backend;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,12 +28,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Value("${app.user.hans.password}")
+    private String hansPassword;
     @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager(){
     return new InMemoryUserDetailsManager(
                 User.builder()
                         .username("Hans")
-                        .password("$2a$10$Bl9WGgbbc8VF3pJ1C6/VDevfzJ1rQF3vyanjLq24vrNAexUyoRjkS")
+                        .password(hansPassword)
                         .roles("Employee")
                         .build()
         );
