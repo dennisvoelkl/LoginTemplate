@@ -2,6 +2,7 @@ package com.example.backend;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -25,22 +26,29 @@ public class SecurityConfig {
                 .csrf().disable()
                 .httpBasic().and()
                 .authorizeRequests()
-                .antMatchers("/api/team").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/team").hasRole("EMPLOYEE")
+                .antMatchers(HttpMethod.GET, "/api/team").authenticated()
+                .antMatchers("/api/team").denyAll()
                 .and().build();
     }
 
     @Bean
-    public PasswordEncoder encoder(){
+    public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager(){
-    return new InMemoryUserDetailsManager(
+    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+        return new InMemoryUserDetailsManager(
                 User.builder()
                         .username("Hans")
                         .password(hansPassword)
-                        .roles("Employee")
+                        .roles("EMPLOYEE")
+                        .build(),
+                User.builder()
+                        .username("Franz")
+                        .password(franzPassword)
+                        .roles("USER")
                         .build()
         );
     }
