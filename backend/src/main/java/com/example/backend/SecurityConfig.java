@@ -1,24 +1,25 @@
 package com.example.backend;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${app.user.hans.password}")
-    String hansPassword;
+    String exception = "You cannot use this method";
 
-    @Value("${app.user.franz.password}")
-    String franzPassword;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,9 +27,9 @@ public class SecurityConfig {
                 .csrf().disable()
                 .httpBasic().and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE, "/api/team").hasRole("EMPLOYEE")
+                .antMatchers(HttpMethod.DELETE, "/api/team").hasRole("Admin")
                 .antMatchers(HttpMethod.GET, "/api/team").authenticated()
-                .antMatchers("/api/team").denyAll()
+                .anyRequest().denyAll()
                 .and().build();
     }
 
@@ -38,20 +39,47 @@ public class SecurityConfig {
     }
 
     @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-        return new InMemoryUserDetailsManager(
-                User.builder()
-                        .username("Hans")
-                        .password(hansPassword)
-                        .roles("EMPLOYEE")
-                        .build(),
-                User.builder()
-                        .username("Franz")
-                        .password(franzPassword)
-                        .roles("USER")
-                        .build()
-        );
+    public UserDetailsManager userDetailsManager() {
+
+        return new UserDetailsManager() {
+
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                AppUser userByName = userService.findByUsername(username);
+                if (userByName == null) {
+                    throw new UsernameNotFoundException("Username not found");
+                }
+                return User.builder()
+                        .username(username)
+                        .password(userByName.passwordBcrypt())
+                        .roles(userByName.roles())
+                        .build();
+            }
+
+            @Override
+            public void createUser(UserDetails user) {
+                throw new UnsupportedOperationException(exception);
+            }
+
+            @Override
+            public void updateUser(UserDetails user) {
+                throw new UnsupportedOperationException(exception);
+            }
+
+            @Override
+            public void deleteUser(String username) {
+                throw new UnsupportedOperationException(exception);
+            }
+
+            @Override
+            public void changePassword(String oldPassword, String newPassword) {
+                throw new UnsupportedOperationException(exception);
+            }
+
+            @Override
+            public boolean userExists(String username) {
+                throw new UnsupportedOperationException(exception);
+            }
+        };
     }
 }
-
-
