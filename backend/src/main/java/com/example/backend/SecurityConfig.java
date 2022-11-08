@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .httpBasic().and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE, "/api/team").hasRole("Admin")
-                .antMatchers(HttpMethod.GET, "/api/team").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/team", "/api/app-users/login", "/api/app-users/logout").authenticated()
                 .anyRequest().denyAll()
                 .and().build();
     }
