@@ -13,6 +13,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${app.user.hans.password}")
+    String hansPassword;
+
+    @Value("${app.user.franz.password}")
+    String franzPassword;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -28,8 +34,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Value("${app.user.hans.password}")
-    private String hansPassword;
     @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager(){
     return new InMemoryUserDetailsManager(
