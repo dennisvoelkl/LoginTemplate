@@ -19,6 +19,8 @@ public class SecurityConfig {
 
     String exception = "You cannot use this method";
 
+    public static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     private final UserService userService;
 
     @Bean
@@ -27,15 +29,24 @@ public class SecurityConfig {
                 .csrf().disable()
                 .httpBasic().and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.DELETE, "/api/team").hasRole("Admin")
-                .antMatchers(HttpMethod.GET, "/api/team", "/api/app-users/login", "/api/app-users/logout").authenticated()
+                .antMatchers(HttpMethod.DELETE,
+                        "/api/team").hasRole("Admin")
+
+                .antMatchers(HttpMethod.GET,
+                        "/api/team",
+                        "/api/app-users/login",
+                        "/api/app-users/logout",
+                        "/api/app-users/me").authenticated()
+
+                .antMatchers(HttpMethod.POST,
+                        "/api/app-users").permitAll()
                 .anyRequest().denyAll()
                 .and().build();
     }
 
     @Bean
     public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
+        return passwordEncoder;
     }
 
     @Bean
